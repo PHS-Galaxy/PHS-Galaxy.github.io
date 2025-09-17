@@ -129,33 +129,42 @@ const urlParams = new URLSearchParams(window.location.search);
 if(urlParams.get('debug')==='1') enableDebug=true;
 if(urlParams.get('threads')==='1' && window.SharedArrayBuffer) enableThreads=true;
 
+function createCoreSelector(ext, fileParts){
+  return new Promise(resolve=>{
+    const coreMap = {
+      "Nintendo 64":"n64","Nintendo Game Boy":"gb","Nintendo Game Boy Advance":"gba","Nintendo DS":"nds",
+      "NES":"nes","SNES":"snes","PlayStation":"psx","Virtual Boy":"vb","Sega Mega Drive":"segaMD",
+      "Sega Master System":"segaMS","Sega CD":"segaCD","Atari Lynx":"lynx","Sega 32X":"sega32x","Atari Jaguar":"jaguar",
+      "Sega Game Gear":"segaGG","Sega Saturn":"segaSaturn","Atari 7800":"atari7800","Atari 2600":"atari2600",
+      "TurboGrafx-16/PC Engine":"pce","PC-FX":"pcfx","NeoGeo Pocket":"ngp","WonderSwan":"ws","ColecoVision":"coleco",
+      "Commodore 64":"vice_x64sc","Commodore 128":"vice_x128","VIC20":"vice_xvic","Plus/4":"vice_xplus4","PET":"vice_xpet"
+    };
+    const select=document.createElement("select");
+    const button=document.createElement("button");
+    for(const [label,val] of Object.entries(coreMap)){ const opt=document.createElement("option"); opt.value=val; opt.textContent=label; select.appendChild(opt);}
+    button.textContent="Load Game";
+    button.onclick=()=>resolve(select.value);
+
+    box.innerHTML=""; box.appendChild(select); box.appendChild(button);
+  });
+}
+
 input.onchange = async () => {
   const file = input.files[0];
-  const parts = file.name.split("."); const ext = parts.pop();
+  const parts = file.name.split(".");
+  const ext = parts.pop().toLowerCase();
+  
+  const core = await createCoreSelector(ext, parts);
 
-  const core = await (async (ext)=>{
-    const known = {nes:["fds","nes","unif","unf"],snes:["smc","fig","sfc","gd3","gd7","dx2","bsx","swc"],n64:["z64","n64"],pce:["pce"],ngp:["ngp","ngc"],ws:["ws","wsc"],vice_x64sc:["d64"]};
-    for(const [k,v] of Object.entries(known)) if(v.includes(ext)) return k;
-    if(["nds","gba","gb","z64","n64"].includes(ext)) return ext;
-
-    return await new Promise(resolve=>{
-      const coreMap = {"Nintendo 64":"n64","Nintendo Game Boy":"gb","Nintendo Game Boy Advance":"gba","Nintendo DS":"nds","Nintendo Entertainment System":"nes","Super Nintendo Entertainment System":"snes","PlayStation":"psx","Virtual Boy":"vb","Sega Mega Drive":"segaMD","Sega Master System":"segaMS","Sega CD":"segaCD","Atari Lynx":"lynx","Sega 32X":"sega32x","Atari Jaguar":"jaguar","Sega Game Gear":"segaGG","Sega Saturn":"segaSaturn","Atari 7800":"atari7800","Atari 2600":"atari2600","NEC TurboGrafx-16/SuperGrafx/PC Engine":"pce","NEC PC-FX":"pcfx","SNK NeoGeo Pocket (Color)":"ngp","Bandai WonderSwan (Color)":"ws","ColecoVision":"coleco","Commodore 64":"vice_x64sc","Commodore 128":"vice_x128","Commodore VIC20":"vice_xvic","Commodore Plus/4":"vice_xplus4","Commodore PET":"vice_xpet"};
-
-      const select=document.createElement("select");
-      const button=document.createElement("button");
-      for(const [label,val] of Object.entries(coreMap)){ const opt=document.createElement("option"); opt.value=val; opt.textContent=label; select.appendChild(opt);}
-      button.textContent="Load Game";
-      button.onclick=()=>resolve(select.value);
-      box.innerHTML=""; box.appendChild(select); box.appendChild(button);
-    });
-  })(ext);
-
+  // Setup display
   const div = document.createElement("div");
   const sub = document.createElement("div");
-  sub.id="game"; div.id="display";
-  box.remove(); document.body.appendChild(div);
+  div.id="display"; sub.id="game";
+  document.body.appendChild(div);
   div.appendChild(sub);
+  box.remove();
 
+  // Setup EJS player
   window.EJS_player="#game";
   window.EJS_gameName=parts.join(".");
   window.EJS_biosUrl="";
@@ -176,13 +185,13 @@ input.onchange = async () => {
 box.ondragover=()=>box.setAttribute("drag",true);
 box.ondragleave=()=>box.removeAttribute("drag");
 
-/* Persist Favicon & Title from Homepage */
+/* Persist Favicon & Title */
 const savedTitle=localStorage.getItem('disguiseTitle');
 const savedFavicon=localStorage.getItem('disguiseFavicon');
 if(savedTitle) document.title=savedTitle;
 if(savedFavicon) document.getElementById('dynamic-favicon').href=savedFavicon;
 
-/* Disguise Tab Function */
+/* Disguise Tab */
 async function disguiseTab() {
   const url = prompt("Enter a site URL to disguise tab (include https://):");
   if(!url) return;
