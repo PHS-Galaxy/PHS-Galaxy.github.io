@@ -1,7 +1,7 @@
 body {
-    cursor: url(https://github.com/PHS-Galaxy/PHS-Galaxy.github.io/blob/main/images/cursor.png?raw=true), auto;
+    cursor: url(https://raw.githubusercontent.com/PHS-Galaxy/PHS-Galaxy.github.io/main/images/cursor.png), auto;
 }
 
 button:hover {
-  cursor: url(https://github.com/PHS-Galaxy/PHS-Galaxy.github.io/blob/main/images/cursor.png?raw=true), pointer;
+  cursor: url(https://raw.githubusercontent.com/PHS-Galaxy/PHS-Galaxy.github.io/main/images/cursor.png), pointer;
 }
