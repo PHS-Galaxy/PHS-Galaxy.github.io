@@ -1,43 +1,34 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>fnafs - Truffled</title>
-<style>
-html, body {
-    margin: 0;
-    padding: 0;
-    width: 100%;
-    height: 100%;
-    overflow: hidden;
-    background: #000;
-}
-iframe {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100vw;
-    height: 100vh;
-    border: none;
-}
-#truffled-logo {
-    position: fixed;
-    bottom: 10px;
-    right: 10px;
-    width: 150px;
-    height: 150px;
-    cursor: pointer;
-    z-index: 9999;
-}
-</style>
-</head>
-<body>
-<iframe src="https://truffled.lol/gamefile/fnafs.html" allowfullscreen></iframe>
-<a href="https://truffled.lol" target="_blank">
-    <img id="truffled-logo" src="https://truffled.lol/png/logo.png" alt="Logo">
-</a>
 
-<script type="text/javascript" src="//pl25308818.revenuecpmgate.com/1e/ca/0b/1eca0b39c37917b7f099788bd311eae3.js"></script>
+<head>
+	<base href="https://cdn.jsdelivr.net/gh/genizy/fnaf@main/sl/">
+    <link rel="stylesheet" type="text/css" href="style.css"/>
+    <link rel="icon" type="image/x-icon" href="favicon.ico" />
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <meta name="viewport" content="initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no, target-densitydpi=device-dpi" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black" />
+    <meta name="HandheldFriendly" content="true" />
+    <title>Five Nights at Freddy's Sister Location</title>
+</head>
+
+<body>
+    <div style="display: inline-block; -webkit-user-select: none; text-align: left">
+        <canvas id="MMFCanvas" width="1280" height="720"> Your browser does not support Canvas, Please try again. </canvas>
+    </div>
+    <div id="progress-container">
+        <div style="margin-bottom: 6px;">Downloading... <span id="download-text">0%</span></div>
+        <div style="width: 100%; background: #444; border-radius: 6px; overflow: hidden;">
+            <div id="download-bar" style="height: 10px; background: #3b82f6; width: 0%; transition: width 0.2s;"></div>
+        </div>
+        <div style="margin: 12px 0 6px;">Extracting... <span id="extract-text">0%</span></div>
+        <div style="width: 100%; background: #444; border-radius: 6px; overflow: hidden;">
+            <div id="extract-bar" style="height: 10px; background: #10b981; width: 0%; transition: width 0.2s;"></div>
+        </div>
+    </div>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+    <script src="main.js"></script>
 </body>
+
 </html>
