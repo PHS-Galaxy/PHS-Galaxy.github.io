@@ -8,7 +8,7 @@
 
 <style>
   * { margin: 0; padding: 0; box-sizing: border-box; }
-  html, body { height: 100%; font-family: 'Orbitron', sans-serif; overflow: hidden; color: white; }
+  html, body { height: 100%; font-family: 'Orbitron', sans-serif; overflow: hidden; color: white; cursor: url('https://i.imgur.com/VYw4R2X.png'), auto; }
   body { background: #000; }
   canvas { display: block; position: fixed; top:0; left:0; z-index: -1; }
 
@@ -17,9 +17,6 @@
     top: 50%; left: 50%;
     transform: translate(-50%, -50%);
     text-align: center;
-    background: rgba(0,0,0,0.5);
-    padding: 25px;
-    border-radius: 20px;
   }
 
   h1 {
@@ -36,20 +33,31 @@
 
   #date-display {
     font-size: 1.2rem;
-    margin-bottom: 30px;
+    margin-bottom: 20px;
     color: #9ad4ff;
     text-shadow: 0 0 10px #4da6ff;
   }
 
+  /* Glassy container for buttons */
+  .button-container {
+    display: flex;
+    justify-content: center;
+    gap: 15px;
+    padding: 20px;
+    border-radius: 20px;
+    background: rgba(255,255,255,0.1);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255,255,255,0.2);
+    margin-bottom: 20px;
+  }
+
   .btn {
-    display: inline-block;
-    margin: 10px;
-    padding: 12px 30px;
+    padding: 12px 25px;
     font-size: 1.1rem;
     color: white;
     background: rgba(0,0,50,0.6);
     border: 2px solid #6ec6ff;
-    border-radius: 30px;
+    border-radius: 20px;
     text-decoration: none;
     transition: 0.3s;
     text-shadow: 0 0 10px #6ec6ff;
@@ -70,11 +78,13 @@
 <div class="content">
   <h1>Portland Galaxy</h1>
   <div id="date-display"></div>
-  <a href="#games" class="btn">Games</a>
-  <a href="#emulator" class="btn">Emulator</a>
-  <a href="#suggestions" class="btn">Suggestions</a>
-  <br><br>
-  <button class="btn" onclick="disguiseTab()">Disguise Tab</button>
+
+  <div class="button-container">
+    <a href="#games" class="btn">Games</a>
+    <a href="#emulator" class="btn">Emulator</a>
+    <a href="#suggestions" class="btn">Suggestions</a>
+    <button class="btn" onclick="disguiseTab()">Disguise Tab</button>
+  </div>
 </div>
 
 <script>
@@ -86,7 +96,7 @@ function updateDate() {
 setInterval(updateDate, 1000);
 updateDate();
 
-// Persistent disguise tab using manual input
+// Apply saved disguise settings
 function applySavedSettings() {
   const savedTitle = localStorage.getItem('disguiseTitle');
   const savedFavicon = localStorage.getItem('disguiseFavicon');
@@ -94,16 +104,30 @@ function applySavedSettings() {
   if (savedFavicon) document.getElementById('dynamic-favicon').href = savedFavicon;
 }
 
-function disguiseTab() {
-  const newTitle = prompt("Enter tab title:");
-  const newFavicon = prompt("Enter favicon URL (direct link to .ico or .png):");
-  if (newTitle) {
+// Disguise tab by fetching title and favicon from a URL
+async function disguiseTab() {
+  const url = prompt("Enter any site URL to disguise tab (include https://):");
+  if (!url) return;
+
+  try {
+    const response = await fetch("https://api.allorigins.win/get?url=" + encodeURIComponent(url));
+    const data = await response.json();
+    const html = data.contents;
+
+    const titleMatch = html.match(/<title>(.*?)<\/title>/i);
+    const newTitle = titleMatch ? titleMatch[1] : "Portland Galaxy";
+
+    const faviconUrl = new URL("/favicon.ico", url).href;
+
     document.title = newTitle;
+    document.getElementById('dynamic-favicon').href = faviconUrl;
+
     localStorage.setItem('disguiseTitle', newTitle);
-  }
-  if (newFavicon) {
-    document.getElementById('dynamic-favicon').href = newFavicon;
-    localStorage.setItem('disguiseFavicon', newFavicon);
+    localStorage.setItem('disguiseFavicon', faviconUrl);
+
+    alert("Tab disguised!");
+  } catch (err) {
+    alert("Failed to fetch site data. Make sure the URL is valid and includes https://");
   }
 }
 
@@ -116,15 +140,15 @@ let w = canvas.width = window.innerWidth;
 let h = canvas.height = window.innerHeight;
 
 const stars = [];
-const numStars = 250;
+const numStars = 400;
 
 for(let i=0;i<numStars;i++){
   stars.push({
     x: Math.random()*w,
     y: Math.random()*h,
     r: Math.random()*1.5+0.5,
-    vx: (Math.random()-0.5)*0.5,
-    vy: (Math.random()-0.5)*0.5
+    vx: (Math.random()-0.5)*0.7,
+    vy: (Math.random()-0.5)*0.7
   });
 }
 
