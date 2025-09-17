@@ -1,25 +1,25 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Portland Galaxy</title>
-  <link id="dynamic-favicon" rel="icon" type="image/png" href="">
+  <link id="dynamic-favicon" rel="icon" href="">
 
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
 
-    body, html {
+    html, body {
       height: 100%;
-      overflow: hidden;
       font-family: 'Orbitron', sans-serif;
       color: white;
+      overflow: hidden;
     }
 
-   body {
-  background: url('https://cdn.makeagif.com/media/otrneG.gif') no-repeat center center fixed;
-  background-size: cover;
-}
+    body {
+      background: url('https://cdn.makeagif.com/media/otrneG.gif') no-repeat center center fixed;
+      background-size: cover;
+    }
 
     .content {
       position: absolute;
@@ -27,15 +27,15 @@
       left: 50%;
       transform: translate(-50%, -50%);
       text-align: center;
-      background: rgba(0,0,0,0.4);
-      padding: 20px;
+      background: rgba(0,0,0,0.5);
+      padding: 25px;
       border-radius: 20px;
     }
 
     h1 {
       font-size: 3rem;
-      text-shadow: 0 0 20px #6ec6ff, 0 0 40px #4da6ff;
       margin-bottom: 20px;
+      text-shadow: 0 0 20px #6ec6ff, 0 0 40px #4da6ff;
       animation: glow 2s ease-in-out infinite alternate;
     }
 
@@ -57,7 +57,7 @@
       padding: 12px 30px;
       font-size: 1.1rem;
       color: white;
-      background: rgba(0, 0, 50, 0.6);
+      background: rgba(0,0,50,0.6);
       border: 2px solid #6ec6ff;
       border-radius: 30px;
       text-decoration: none;
@@ -74,60 +74,68 @@
   </style>
 </head>
 <body>
-  <div class="content">
-    <h1>Portland Galaxy</h1>
-    <div id="date-display"></div>
 
-    <a href="#games" class="btn">Games</a>
-    <a href="#emulator" class="btn">Emulator</a>
-    <a href="#suggestions" class="btn">Suggestions</a>
-    <br><br>
-    <button class="btn" onclick="changeFaviconAndTitle()">disguise tab</button>
-  </div>
+<div class="content">
+  <h1>Portland Galaxy</h1>
+  <div id="date-display"></div>
 
-  <script>
-    function updateDate() {
-      const date = new Date();
-      document.getElementById("date-display").textContent =
-        date.toDateString() + " " + date.toLocaleTimeString();
+  <a href="#games" class="btn">Games</a>
+  <a href="#emulator" class="btn">Emulator</a>
+  <a href="#suggestions" class="btn">Suggestions</a>
+  <br><br>
+  <button class="btn" onclick="disguiseTab()">Disguise Tab</button>
+</div>
+
+<script>
+  // Display live date and time
+  function updateDate() {
+    const now = new Date();
+    document.getElementById("date-display").textContent = now.toDateString() + " " + now.toLocaleTimeString();
+  }
+  setInterval(updateDate, 1000);
+  updateDate();
+
+  // Apply saved favicon and title on page load
+  function applySavedSettings() {
+    const savedTitle = localStorage.getItem('disguiseTitle');
+    const savedFavicon = localStorage.getItem('disguiseFavicon');
+    if (savedTitle) document.title = savedTitle;
+    if (savedFavicon) document.getElementById('dynamic-favicon').href = savedFavicon;
+  }
+
+  // Disguise tab function
+  async function disguiseTab() {
+    const url = prompt("Enter any site URL to disguise tab (favicon & title):");
+    if (!url) return;
+
+    try {
+      // Fetch page contents (CORS-safe)
+      const response = await fetch("https://api.allorigins.win/get?url=" + encodeURIComponent(url));
+      const data = await response.json();
+      const html = data.contents;
+
+      // Extract title
+      const titleMatch = html.match(/<title>(.*?)<\/title>/i);
+      const newTitle = titleMatch ? titleMatch[1] : "Portland Galaxy";
+
+      // Extract favicon (assumes default /favicon.ico)
+      const faviconUrl = new URL("/favicon.ico", url).href;
+
+      // Apply and save
+      document.title = newTitle;
+      document.getElementById('dynamic-favicon').href = faviconUrl;
+
+      localStorage.setItem('disguiseTitle', newTitle);
+      localStorage.setItem('disguiseFavicon', faviconUrl);
+
+      alert("Tab disguised!");
+    } catch (err) {
+      alert("Failed to fetch site data. Make sure the URL is valid and includes https://");
     }
-    setInterval(updateDate, 1000);
-    updateDate();
+  }
 
-    function applySavedSettings() {
-      const savedTitle = localStorage.getItem("siteTitle");
-      const savedFavicon = localStorage.getItem("siteFavicon");
-      if (savedTitle) document.title = savedTitle;
-      if (savedFavicon) document.getElementById("dynamic-favicon").href = savedFavicon;
-    }
+  applySavedSettings();
+</script>
 
-    async function changeFaviconAndTitle() {
-      const url = prompt("Enter a site URL (example: https://example.com)");
-      if (!url) return;
-
-      try {
-        const response = await fetch("https://api.allorigins.win/get?url=" + encodeURIComponent(url));
-        const data = await response.json();
-        const html = data.contents;
-
-        const titleMatch = html.match(/<title>(.*?)<\\/title>/i);
-        const siteTitle = titleMatch ? titleMatch[1] : "Portland Galaxy";
-
-        const faviconUrl = new URL("/favicon.ico", url).href;
-
-        document.title = siteTitle;
-        document.getElementById("dynamic-favicon").href = faviconUrl;
-
-        localStorage.setItem("siteTitle", siteTitle);
-        localStorage.setItem("siteFavicon", faviconUrl);
-
-        alert("Title and favicon updated!");
-      } catch (err) {
-        alert("Failed to fetch site data. Check the URL.");
-      }
-    }
-
-    applySavedSettings();
-  </script>
 </body>
 </html>
