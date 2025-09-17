@@ -3,5 +3,5 @@ body {
 }
 
 button:hover {
-  cursor: url(images/cursor.png), pointer;
+  cursor: url(images/cursor.png), auto;
 }
