@@ -1,11 +1,285 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Games</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Portland Galaxy - Games</title>
+<link id="dynamic-favicon" rel="icon" href="">
+
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html, body { height: 100%; font-family: 'Orbitron', sans-serif; overflow-x: hidden; color: white; cursor: url('https://i.imgur.com/VYw4R2X.png'), auto; }
+  body { background: #000; }
+  canvas { display: block; position: fixed; top:0; left:0; z-index: -1; }
+
+  .content {
+    position: relative;
+    padding: 20px;
+    max-width: 1200px;
+    margin: auto;
+    top: 50px;
+  }
+
+  h1 {
+    font-size: 3rem;
+    margin-bottom: 20px;
+    text-align: center;
+    text-shadow: 0 0 20px #6ec6ff, 0 0 40px #4da6ff;
+    animation: glow 2s ease-in-out infinite alternate;
+  }
+
+  @keyframes glow {
+    from { text-shadow: 0 0 10px #6ec6ff, 0 0 20px #4da6ff; }
+    to { text-shadow: 0 0 20px #9ad4ff, 0 0 40px #6ec6ff; }
+  }
+
+  .home-btn {
+    display: block;
+    margin: 0 auto 30px auto;
+    padding: 12px 25px;
+    font-size: 1.1rem;
+    color: white;
+    background: rgba(0,0,50,0.6);
+    border: 2px solid #6ec6ff;
+    border-radius: 20px;
+    text-decoration: none;
+    text-align: center;
+    width: 120px;
+    transition: 0.3s;
+  }
+  .home-btn:hover {
+    background: #6ec6ff;
+    color: #090a0f;
+    box-shadow: 0 0 20px #6ec6ff, 0 0 40px #4da6ff;
+  }
+
+  .search-bar {
+    display: block;
+    margin: 0 auto 30px auto;
+    padding: 12px;
+    font-size: 1.1rem;
+    width: 50%;
+    border-radius: 20px;
+    border: 2px solid #6ec6ff;
+    background: rgba(0,0,50,0.5);
+    color: white;
+  }
+
+  .cards-container {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 20px;
+    justify-items: center;
+  }
+
+  .card {
+    display: block;
+    background: rgba(255,255,255,0.1);
+    backdrop-filter: blur(10px);
+    border-radius: 20px;
+    padding: 20px;
+    width: 100%;
+    max-width: 300px;
+    text-align: center;
+    border: 1px solid rgba(255,255,255,0.2);
+    text-decoration: none;
+    color: white;
+    transition: 0.3s;
+  }
+
+  .card h3 {
+    margin-bottom: 15px;
+    font-size: 1.5rem;
+    color: #9ad4ff;
+  }
+
+  .card p {
+    font-size: 1rem;
+    color: #ddd;
+  }
+
+  .card:hover {
+    background: rgba(110,198,255,0.2);
+    color: #090a0f;
+    border-color: #6ec6ff;
+    box-shadow: 0 0 20px #6ec6ff, 0 0 40px #4da6ff;
+  }
+</style>
 </head>
 <body>
-    
+
+<canvas id="starfield"></canvas>
+
+<div class="content">
+  <h1>Games</h1>
+  <a href="index.html" class="home-btn">Home</a>
+  <input type="text" id="search" class="search-bar" placeholder="Search games..." onkeyup="filterGames()">
+
+  <div class="cards-container" id="cards-container">
+   
+      <a class="card" href="./nzpz/index.html">
+      <h3>Call of duty Zombies</h3>
+      <p>Zombie survival with strategy and defense mechanics.</p>
+    </a>
+
+      <a class="card" href="./Hollow-Knight/index.html">
+      <h3>Call of duty Zombies</h3>
+      <p>Explore a vast underground kingdom as a tiny knight.</p>
+    </a>
+
+      <a class="card" href="./Raft/index.html">
+      <h3>Call of duty Zombies</h3>
+      <p>Survive on a floating raft in the endless ocean.</p>
+    </a>
+
+      <a class="card" href="./Bendy-and-the-Ink-Machine/index.html">
+      <h3>Bendy and the Ink Machine</h3>
+      <p>Creepy puzzle-horror in an old animation studio.</p>
+    </a>
+
+      <a class="card" href="./minecraft/Astra_Client.html">
+      <h3>Minecraft 1.8.8</h3>
+      <p>Classic version, multiplayer works with 1.8.8 servers.</p>
+    </a>
+
+        <a class="card" href="./minecraft/mincraft1,12,2.html">
+      <h3>Minecraft 1.12.2</h3>
+      <p>Singleplayer version, multiplayer not supported.</p>
+    </a>
+
+        <a class="card" href="./Buckshot-Roulette/index.html">
+      <h3>Buckshot Roulette</h3>
+      <p>Test your luck in a wild shooting mini-game.</p>
+    </a>
+
+        <a class="card" href="./FNAF/1.html">
+      <h3>Five Nights At Freddys</h3>
+      <p>Survive night shifts at Freddy Fazbear’s Pizza.</p>
+    </a>
+
+      <a class="card" href="./FNAF/2.html">
+      <h3>Five Nights At Freddys 2</h3>
+      <p>Face new animatronics and manage limited power.</p>
+    </a>
+
+      <a class="card" href="./FNAF/3.html">
+      <h3>Five Nights At Freddys 3</h3>
+      <p>Investigate the horror in a spooky abandoned attraction.</p>
+    </a>
+
+      <a class="card" href="./FNAF/4.html">
+      <h3>Five Nights At Freddys 4</h3>
+      <p>Nightmare-filled nights in a haunted child’s bedroom.</p>
+    </a>
+
+       <a class="card" href="./FNAF/UCN.html">
+      <h3>Five Nights At Freddys UCN</h3>
+      <p>Customize animatronic challenges and survive endless nights.</p>
+    </a>
+
+       <a class="card" href="./FNAF/sisterlocation.html">
+      <h3>Five Nights At Freddys Sister Location</h3>
+      <p>Survive animatronics in a creepy underground facility.</p>
+    </a>
+
+      <a class="card" href="./R.E.P.O/index.html">
+      <h3>R.E.P.O</h3>
+      <p>Explore monster-filled facilities to collect and extract valuable items.</p>
+    </a>
+
+      <a class="card" href="./Thats-Not-My-Neighbor/index.html">
+      <h3>Thats Not My Neighbor</h3>
+      <p>Solve neighborhood mysteries in a stealthy adventure..</p>
+    </a>
+
+      <a class="card" href="./The-Deadseat/index.html">
+      <h3>The Deadseat</h3>
+      <p>Survive waves of zombies in this fast-paced shooter.</p>
+    </a>
+
+      <a class="card" href="./Ultrakill/index.html">
+      <h3>UltraKill</h3>
+      <p>High-speed retro-style first-person shooter carnage.</p>
+    </a>
+
+      <a class="card" href="./Undertale/index.html">
+      <h3>Undertale</h3>
+      <p>Unique RPG with quirky characters and choices.</p>
+    </a>
+
+      <a class="card" href="./unicycle-hero/index.html">
+      <h3>Unicycle Hero</h3>
+      <p>Master stunts and tricks on a unicycle.</p>
+    </a>
+      
+  </div>
+</div>
+
+<script>
+// Starfield particles background
+const canvas = document.getElementById('starfield');
+const ctx = canvas.getContext('2d');
+let w = canvas.width = window.innerWidth;
+let h = canvas.height = window.innerHeight;
+
+const stars = [];
+const numStars = 400;
+
+for(let i=0;i<numStars;i++){
+  stars.push({
+    x: Math.random()*w,
+    y: Math.random()*h,
+    r: Math.random()*1.5+0.5,
+    vx: (Math.random()-0.5)*0.7,
+    vy: (Math.random()-0.5)*0.7
+  });
+}
+
+function animate() {
+  ctx.fillStyle = '#000';
+  ctx.fillRect(0,0,w,h);
+
+  ctx.fillStyle = '#fff';
+  stars.forEach(s=>{
+    s.x += s.vx;
+    s.y += s.vy;
+
+    if(s.x<0) s.x=w;
+    if(s.x>w) s.x=0;
+    if(s.y<0) s.y=h;
+    if(s.y>h) s.y=0;
+
+    ctx.beginPath();
+    ctx.arc(s.x,s.y,s.r,0,Math.PI*2);
+    ctx.fill();
+  });
+
+  requestAnimationFrame(animate);
+}
+
+animate();
+
+window.addEventListener('resize', ()=>{
+  w = canvas.width = window.innerWidth;
+  h = canvas.height = window.innerHeight;
+});
+
+// Search/filter function
+function filterGames() {
+  const input = document.getElementById('search').value.toLowerCase();
+  const cards = document.querySelectorAll('.card');
+
+  cards.forEach(card => {
+    const title = card.querySelector('h3').textContent.toLowerCase();
+    const desc = card.querySelector('p').textContent.toLowerCase();
+    if(title.includes(input) || desc.includes(input)){
+      card.style.display = '';
+    } else {
+      card.style.display = 'none';
+    }
+  });
+}
+</script>
+
 </body>
 </html>
