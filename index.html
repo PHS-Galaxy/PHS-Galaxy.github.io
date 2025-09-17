@@ -1,84 +1,75 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Portland Galaxy</title>
-  <link id="dynamic-favicon" rel="icon" href="">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Portland Galaxy</title>
+<link id="dynamic-favicon" rel="icon" href="">
 
-  <style>
-    * { margin: 0; padding: 0; box-sizing: border-box; }
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html, body { height: 100%; font-family: 'Orbitron', sans-serif; overflow: hidden; color: white; }
+  body { background: #000; }
+  canvas { display: block; position: fixed; top:0; left:0; z-index: -1; }
 
-    html, body {
-      height: 100%;
-      font-family: 'Orbitron', sans-serif;
-      color: white;
-      overflow: hidden;
-    }
+  .content {
+    position: absolute;
+    top: 50%; left: 50%;
+    transform: translate(-50%, -50%);
+    text-align: center;
+    background: rgba(0,0,0,0.5);
+    padding: 25px;
+    border-radius: 20px;
+  }
 
-    body {
-      background: url('https://cdn.makeagif.com/media/otrneG.gif') no-repeat center center fixed;
-      background-size: cover;
-    }
+  h1 {
+    font-size: 3rem;
+    margin-bottom: 20px;
+    text-shadow: 0 0 20px #6ec6ff, 0 0 40px #4da6ff;
+    animation: glow 2s ease-in-out infinite alternate;
+  }
 
-    .content {
-      position: absolute;
-      top: 50%;
-      left: 50%;
-      transform: translate(-50%, -50%);
-      text-align: center;
-      background: rgba(0,0,0,0.5);
-      padding: 25px;
-      border-radius: 20px;
-    }
+  @keyframes glow {
+    from { text-shadow: 0 0 10px #6ec6ff, 0 0 20px #4da6ff; }
+    to { text-shadow: 0 0 20px #9ad4ff, 0 0 40px #6ec6ff; }
+  }
 
-    h1 {
-      font-size: 3rem;
-      margin-bottom: 20px;
-      text-shadow: 0 0 20px #6ec6ff, 0 0 40px #4da6ff;
-      animation: glow 2s ease-in-out infinite alternate;
-    }
+  #date-display {
+    font-size: 1.2rem;
+    margin-bottom: 30px;
+    color: #9ad4ff;
+    text-shadow: 0 0 10px #4da6ff;
+  }
 
-    @keyframes glow {
-      from { text-shadow: 0 0 10px #6ec6ff, 0 0 20px #4da6ff; }
-      to { text-shadow: 0 0 20px #9ad4ff, 0 0 40px #6ec6ff; }
-    }
+  .btn {
+    display: inline-block;
+    margin: 10px;
+    padding: 12px 30px;
+    font-size: 1.1rem;
+    color: white;
+    background: rgba(0,0,50,0.6);
+    border: 2px solid #6ec6ff;
+    border-radius: 30px;
+    text-decoration: none;
+    transition: 0.3s;
+    text-shadow: 0 0 10px #6ec6ff;
+    cursor: pointer;
+  }
 
-    #date-display {
-      font-size: 1.2rem;
-      margin-bottom: 30px;
-      color: #9ad4ff;
-      text-shadow: 0 0 10px #4da6ff;
-    }
-
-    .btn {
-      display: inline-block;
-      margin: 10px;
-      padding: 12px 30px;
-      font-size: 1.1rem;
-      color: white;
-      background: rgba(0,0,50,0.6);
-      border: 2px solid #6ec6ff;
-      border-radius: 30px;
-      text-decoration: none;
-      transition: 0.3s;
-      text-shadow: 0 0 10px #6ec6ff;
-      cursor: pointer;
-    }
-
-    .btn:hover {
-      background: #6ec6ff;
-      color: #090a0f;
-      box-shadow: 0 0 20px #6ec6ff, 0 0 40px #4da6ff;
-    }
-  </style>
+  .btn:hover {
+    background: #6ec6ff;
+    color: #090a0f;
+    box-shadow: 0 0 20px #6ec6ff, 0 0 40px #4da6ff;
+  }
+</style>
 </head>
 <body>
+
+<canvas id="starfield"></canvas>
 
 <div class="content">
   <h1>Portland Galaxy</h1>
   <div id="date-display"></div>
-
   <a href="#games" class="btn">Games</a>
   <a href="#emulator" class="btn">Emulator</a>
   <a href="#suggestions" class="btn">Suggestions</a>
@@ -87,55 +78,84 @@
 </div>
 
 <script>
-  // Display live date and time
-  function updateDate() {
-    const now = new Date();
-    document.getElementById("date-display").textContent = now.toDateString() + " " + now.toLocaleTimeString();
+// Update live date
+function updateDate() {
+  const now = new Date();
+  document.getElementById("date-display").textContent = now.toDateString() + " " + now.toLocaleTimeString();
+}
+setInterval(updateDate, 1000);
+updateDate();
+
+// Persistent disguise tab using manual input
+function applySavedSettings() {
+  const savedTitle = localStorage.getItem('disguiseTitle');
+  const savedFavicon = localStorage.getItem('disguiseFavicon');
+  if (savedTitle) document.title = savedTitle;
+  if (savedFavicon) document.getElementById('dynamic-favicon').href = savedFavicon;
+}
+
+function disguiseTab() {
+  const newTitle = prompt("Enter tab title:");
+  const newFavicon = prompt("Enter favicon URL (direct link to .ico or .png):");
+  if (newTitle) {
+    document.title = newTitle;
+    localStorage.setItem('disguiseTitle', newTitle);
   }
-  setInterval(updateDate, 1000);
-  updateDate();
-
-  // Apply saved favicon and title on page load
-  function applySavedSettings() {
-    const savedTitle = localStorage.getItem('disguiseTitle');
-    const savedFavicon = localStorage.getItem('disguiseFavicon');
-    if (savedTitle) document.title = savedTitle;
-    if (savedFavicon) document.getElementById('dynamic-favicon').href = savedFavicon;
+  if (newFavicon) {
+    document.getElementById('dynamic-favicon').href = newFavicon;
+    localStorage.setItem('disguiseFavicon', newFavicon);
   }
+}
 
-  // Disguise tab function
-  async function disguiseTab() {
-    const url = prompt("Enter any site URL to disguise tab (favicon & title):");
-    if (!url) return;
+applySavedSettings();
 
-    try {
-      // Fetch page contents (CORS-safe)
-      const response = await fetch("https://api.allorigins.win/get?url=" + encodeURIComponent(url));
-      const data = await response.json();
-      const html = data.contents;
+// Starfield particles background
+const canvas = document.getElementById('starfield');
+const ctx = canvas.getContext('2d');
+let w = canvas.width = window.innerWidth;
+let h = canvas.height = window.innerHeight;
 
-      // Extract title
-      const titleMatch = html.match(/<title>(.*?)<\/title>/i);
-      const newTitle = titleMatch ? titleMatch[1] : "Portland Galaxy";
+const stars = [];
+const numStars = 250;
 
-      // Extract favicon (assumes default /favicon.ico)
-      const faviconUrl = new URL("/favicon.ico", url).href;
+for(let i=0;i<numStars;i++){
+  stars.push({
+    x: Math.random()*w,
+    y: Math.random()*h,
+    r: Math.random()*1.5+0.5,
+    vx: (Math.random()-0.5)*0.5,
+    vy: (Math.random()-0.5)*0.5
+  });
+}
 
-      // Apply and save
-      document.title = newTitle;
-      document.getElementById('dynamic-favicon').href = faviconUrl;
+function animate() {
+  ctx.fillStyle = '#000';
+  ctx.fillRect(0,0,w,h);
 
-      localStorage.setItem('disguiseTitle', newTitle);
-      localStorage.setItem('disguiseFavicon', faviconUrl);
+  ctx.fillStyle = '#fff';
+  stars.forEach(s=>{
+    s.x += s.vx;
+    s.y += s.vy;
 
-      alert("Tab disguised!");
-    } catch (err) {
-      alert("Failed to fetch site data. Make sure the URL is valid and includes https://");
-    }
-  }
+    if(s.x<0) s.x=w;
+    if(s.x>w) s.x=0;
+    if(s.y<0) s.y=h;
+    if(s.y>h) s.y=0;
 
-  applySavedSettings();
+    ctx.beginPath();
+    ctx.arc(s.x,s.y,s.r,0,Math.PI*2);
+    ctx.fill();
+  });
+
+  requestAnimationFrame(animate);
+}
+
+animate();
+
+window.addEventListener('resize', ()=>{
+  w = canvas.width = window.innerWidth;
+  h = canvas.height = window.innerHeight;
+});
 </script>
-
 </body>
 </html>
