@@ -1,11 +1,254 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Emulator</title>
+  <meta charset="UTF-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Portland Games | Portal</title>
+  <link rel="icon" href="docs/images.ico" sizes="16x16 32x32 48x48 64x64" type="image/vnd.microsoft.icon" />
+  <link rel="stylesheet" href="style.css" />
+  <link rel="stylesheet" href="cssbuttons-io.css" />
+  <style>
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: #0b1020;
+      color: #e6ecff;
+      overflow-x: hidden;
+    }
+
+    /* Star background effect */
+    .stars, .shooting-star {
+      position: absolute;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      z-index: -1;
+      background: transparent;
+    }
+
+    #top {
+      text-align: center;
+      padding: 20px;
+    }
+
+    #box {
+      background: #10172a;
+      border: 2px dashed #59cbe8;
+      padding: 40px;
+      text-align: center;
+      border-radius: 18px;
+      max-width: 420px;
+      margin: 60px auto;
+      transition: all 0.3s ease;
+      box-shadow: 0 12px 28px rgba(0,0,0,0.4);
+    }
+
+    #box:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 18px 36px rgba(0,0,0,0.5);
+      border-color: #00d4ff;
+    }
+
+    #box[drag] {
+      border-color: #4cafef;
+      background-color: #0f1a36;
+    }
+
+    #input {
+      display: none;
+    }
+
+    /* Style for upload button */
+    label.cssbuttons-io {
+      display: inline-block;
+      cursor: pointer;
+      margin-top: 15px;
+    }
+
+    /* Center game container when loaded */
+    #display {
+      margin: auto;
+      padding: 20px;
+      max-width: 95%;
+    }
+  </style>
 </head>
 <body>
-    
+
+  <div class="stars"></div>
+  <div class="shooting-star"></div>
+  <div class="shooting-star"></div>
+  <div class="shooting-star"></div>
+  <div class="shooting-star"></div>
+  <div class="shooting-star"></div>
+
+  <div id="top">
+    <button class="cssbuttons-io" id="emulatorButton">
+      <span>
+        <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+          <path d="M0 0h24v24H0z" fill="none"></path>
+          <path
+            d="M24 12l-5.657 5.657-1.414-1.414L21.172 12l-4.243-4.243 1.414-1.414L24 12zM2.828 12l4.243 4.243-1.414 1.414L0 12l5.657-5.657L7.07 7.757 2.828 12zm6.96 9H7.66l6.552-18h2.128L9.788 21z"
+            fill="currentColor"
+          ></path>
+        </svg>
+        Home
+      </span>
+    </button>
+    <script>
+      document.getElementById('emulatorButton').addEventListener('click', function() {
+       window.location.href = '/PHSG/index.html';
+      });
+    </script>
+  </div>
+
+  <div id="box">
+    <input type="file" id="input" />
+    <label for="input" class="cssbuttons-io">
+      <span>
+        <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+          <path d="M0 0h24v24H0z" fill="none"></path>
+          <path
+            d="M12 2a10 10 0 100 20 10 10 0 000-20zm1 14.59L8.41 12 10 10.41 13 13.59l4.59-4.59L19 10l-6 6z"
+            fill="currentColor"
+          ></path>
+        </svg>
+        Click To Upload ROM
+      </span>
+    </label>
+  </div>
+
+  <script>
+    const input = document.getElementById("input");
+    const box = document.getElementById("box");
+
+    let enableDebug = false;
+    let enableThreads = false;
+    const urlParams = new URLSearchParams(window.location.search);
+
+    if (urlParams.get('debug') === '1') {
+      enableDebug = true;
+      console.log("Debug is enabled");
+    } else {
+      console.log("Debug is disabled");
+    }
+
+    if (urlParams.get('threads') === '1') {
+      if (window.SharedArrayBuffer) {
+        enableThreads = true;
+        console.log("Threads are enabled");
+      } else {
+        console.warn("Threads are disabled as SharedArrayBuffer is not available.");
+        console.log("Threads are disabled");
+      }
+    } else {
+      console.log("Threads are disabled");
+    }
+
+    input.onchange = async () => {
+      const file = input.files[0];
+      const parts = file.name.split(".");
+      const ext = parts.pop();
+
+      const core = await (async (ext) => {
+        const known = {
+          nes: ["fds", "nes", "unif", "unf"],
+          snes: ["smc", "fig", "sfc", "gd3", "gd7", "dx2", "bsx", "swc"],
+          n64: ["z64", "n64"],
+          pce: ["pce"],
+          ngp: ["ngp", "ngc"],
+          ws: ["ws", "wsc"],
+          coleco: ["col", "cv"],
+          vice_x64sc: ["d64"],
+        };
+
+        for (const [k, v] of Object.entries(known)) {
+          if (v.includes(ext)) return k;
+        }
+
+        if (["nds", "gba", "gb", "z64", "n64"].includes(ext)) return ext;
+
+        return await new Promise(resolve => {
+          const coreMap = {
+            "Nintendo 64": "n64",
+            "Nintendo Game Boy": "gb",
+            "Nintendo Game Boy Advance": "gba",
+            "Nintendo DS": "nds",
+            "Nintendo Entertainment System": "nes",
+            "Super Nintendo Entertainment System": "snes",
+            "PlayStation": "psx",
+            "Virtual Boy": "vb",
+            "Sega Mega Drive": "segaMD",
+            "Sega Master System": "segaMS",
+            "Sega CD": "segaCD",
+            "Atari Lynx": "lynx",
+            "Sega 32X": "sega32x",
+            "Atari Jaguar": "jaguar",
+            "Sega Game Gear": "segaGG",
+            "Sega Saturn": "segaSaturn",
+            "Atari 7800": "atari7800",
+            "Atari 2600": "atari2600",
+            "NEC TurboGrafx-16/SuperGrafx/PC Engine": "pce",
+            "NEC PC-FX": "pcfx",
+            "SNK NeoGeo Pocket (Color)": "ngp",
+            "Bandai WonderSwan (Color)": "ws",
+            "ColecoVision": "coleco",
+            "Commodore 64": "vice_x64sc",
+            "Commodore 128": "vice_x128",
+            "Commodore VIC20": "vice_xvic",
+            "Commodore Plus/4": "vice_xplus4",
+            "Commodore PET": "vice_xpet"
+          };
+
+          const select = document.createElement("select");
+          const button = document.createElement("button");
+
+          for (const [label, val] of Object.entries(coreMap)) {
+            const opt = document.createElement("option");
+            opt.value = val;
+            opt.textContent = label;
+            select.appendChild(opt);
+          }
+
+          button.textContent = "Load Game";
+          button.onclick = () => resolve(select.value);
+
+          box.innerHTML = "";
+          box.appendChild(select);
+          box.appendChild(button);
+        });
+      })(ext);
+
+      const div = document.createElement("div");
+      const sub = document.createElement("div");
+      const script = document.createElement("script");
+
+      sub.id = "game";
+      div.id = "display";
+
+      document.getElementById("top")?.remove();
+      box.remove();
+
+      div.appendChild(sub);
+      document.body.appendChild(div);
+
+      window.EJS_player = "#game";
+      window.EJS_gameName = parts.join(".");
+      window.EJS_biosUrl = "";
+      window.EJS_gameUrl = file;
+      window.EJS_core = core;
+      window.EJS_pathtodata = "data/";
+      window.EJS_startOnLoaded = true;
+      window.EJS_DEBUG_XX = enableDebug;
+      window.EJS_disableDatabases = true;
+      window.EJS_threads = enableThreads;
+
+      script.src = "data/loader.js";
+      document.body.appendChild(script);
+    };
+
+    box.ondragover = () => box.setAttribute("drag", true);
+    box.ondragleave = () => box.removeAttribute("drag");
+  </script>
 </body>
 </html>
