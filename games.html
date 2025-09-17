@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+ <link id="dynamic-favicon" rel="icon" href="">
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Portland Galaxy - Games</title>
@@ -279,8 +280,22 @@ function filterGames() {
     }
   });
 }
+
+ // Apply saved favicon and tab title from localStorage
+function applySavedSettings() {
+  const savedTitle = localStorage.getItem('disguiseTitle');
+  const savedFavicon = localStorage.getItem('disguiseFavicon');
+  if (savedTitle) document.title = savedTitle;
+  if (savedFavicon) document.getElementById('dynamic-favicon').href = savedFavicon;
+}
+
+// Call it immediately
+applySavedSettings();
+
 </script>
 
+ 
 </body>
 </html>
+
 
