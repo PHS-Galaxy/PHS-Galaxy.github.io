@@ -6,6 +6,64 @@
         <meta name = viewport content = "width = device-width, initial-scale = 1">
         <link rel="stylesheet" href="style.css">
         <style>
+              .content {
+    position: absolute;
+    top: 50%; left: 50%;
+    transform: translate(-50%, -50%);
+    text-align: center;
+  }
+
+  h1 {
+    font-size: 3rem;
+    margin-bottom: 20px;
+    text-shadow: 0 0 20px #6ec6ff, 0 0 40px #4da6ff;
+    animation: glow 2s ease-in-out infinite alternate;
+  }
+
+  @keyframes glow {
+    from { text-shadow: 0 0 10px #6ec6ff, 0 0 20px #4da6ff; }
+    to { text-shadow: 0 0 20px #9ad4ff, 0 0 40px #6ec6ff; }
+  }
+
+  #date-display {
+    font-size: 1.2rem;
+    margin-bottom: 20px;
+    color: #9ad4ff;
+    text-shadow: 0 0 10px #4da6ff;
+  }
+
+  /* Glassy container for buttons */
+  .button-container {
+    display: flex;
+    justify-content: center;
+    gap: 15px;
+    padding: 20px;
+    border-radius: 20px;
+    background: rgba(255,255,255,0.1);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255,255,255,0.2);
+    margin-bottom: 20px;
+  }
+
+  .btn {
+    padding: 12px 25px;
+    font-size: 1.1rem;
+    color: white;
+    background: rgba(0,0,50,0.6);
+    border: 2px solid #6ec6ff;
+    border-radius: 20px;
+    text-decoration: none;
+    transition: 0.3s;
+    text-shadow: 0 0 10px #6ec6ff;
+    cursor: pointer;
+  }
+
+  .btn:hover {
+    background: #6ec6ff;
+    color: #090a0f;
+    box-shadow: 0 0 20px #6ec6ff, 0 0 40px #4da6ff;
+  }
+
              body, html {
                 height: 100%;
                 background-color: black;
