@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Import/export site data</title>
+</head>
+<body>
+  <button id="exportCookies">Export Cookies</button>
+  <input type="file" id="importFile" style="display:none;" />
+  <button id="importCookies">Import Cookies</button>
+
+  <script>
+    // Export Cookies
+    document.getElementById('exportCookies').addEventListener('click', () => {
+      const cookies = document.cookie.split('; ').map(cookieStr => {
+        const [name, ...rest] = cookieStr.split('=');
+        return { name, value: rest.join('=') };
+      });
+
+      const blob = new Blob([JSON.stringify(cookies, null, 2)], { type: 'application/json' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `cookies-${location.hostname}.json`;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+    });
+
+    // Trigger file input when "Import Cookies" button is clicked
+    document.getElementById('importCookies').addEventListener('click', () => {
+      document.getElementById('importFile').click();
+    });
+
+    // Handle cookie import
+    document.getElementById('importFile').addEventListener('change', async (event) => {
+      const file = event.target.files[0];
+      if (!file) return;
+
+      const text = await file.text();
+      let cookies;
+      try {
+        cookies = JSON.parse(text);
+      } catch (e) {
+        alert("Invalid JSON file.");
+        return;
+      }
+
+      cookies.forEach(cookie => {
+        document.cookie = `${cookie.name}=${cookie.value}; path=/`;
+      });
+
+      alert("Cookies imported (accessible ones only).");
+    });
+  </script>
+</body>
+</html>
